@@ -25,6 +25,7 @@ const PORT = process.env.PORT || 5000;
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
+  'https://secretlease-admin-panel01.vercel.app',
   'https://secretlease-admin-panel-ldy0xkm5g-cactus-projects-f15019d1.vercel.app',
   'https://secretlease-admin-panel-3sjnyp36b-cactus-projects-f15019d1.vercel.app',
   'https://secretlease-admin-panel-dsvuhdf2e-cactus-projects-f15019d1.vercel.app',
