@@ -1,0 +1,87 @@
+// This is your Prisma schema file
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String   @id @default(uuid())
+  email            String   @unique
+  password         String
+  role             String   @default("user") // "user" or "admin"
+  isApproved       Boolean  @default(false) // Admin approval status
+  hasPaid          Boolean  @default(false)
+  
+  // Payment details from signup
+  paymentMethod    String?  // "paypal", "btc", "usdt"
+  paymentEmail     String?  // PayPal email/username
+  walletAddress    String?  // BTC/USDT wallet address
+  transactionHash  String?  // Transaction hash for verification
+  
+  favorites        String[] // Array of listing IDs
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  transactions Transaction[]
+
+  @@map("users")
+}
+
+model Listing {
+  id          String   @id @default(uuid())
+  city        String   // "NY" or "LA"
+  title       String
+  area        String
+  price       Int
+  beds        Int
+  baths       Int
+  sqft        Int
+  type        String
+  address     String
+  imageUrl    String?
+  description String?
+  amenities   String[] // Array of amenities
+  contact     String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([city, price])
+  @@index([isActive])
+  @@map("listings")
+}
+
+model Transaction {
+  id        String   @id @default(uuid())
+  userId    String
+  userEmail String
+  amount    Int
+  method    String   // "paypal", "btc", "usdt"
+  status    String   @default("pending") // "pending", "completed", "rejected"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@index([createdAt])
+  @@map("transactions")
+}
+
+model AdminConfig {
+  id           String   @id @default(uuid())
+  paypalEmail  String
+  btcAddress   String
+  usdtAddress  String
+  priceUsd     Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("admin_config")
+}
